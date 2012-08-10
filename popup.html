@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <title>PawHash</title>
+    <link rel='stylesheet' href='popup.css'>
+  </head>
+  <body>
+    <form>
+      <label for='tag'>Site Tag</label>
+      <input type='password' name='tag' id='tag'>
+      <label for='key'>Master Password</label>
+      <input type='password' name='key' id='key'>
+      <label for='hash'>Hashed Password</label>
+      <input type='password' name='hash' id='hash'>
+      <button type='button' id='fill'>Autofill Hash</button>
+      <button type='button' id='showoptions'>Options</button>
+      <div id='options'>
+        <fieldset>
+          <legend>Password requirements</legend>
+          <div>
+            <input type='checkbox' name='digits' id='digits'>
+            <label for='digits'>At least one digit</label>
+          </div>
+          <div>
+            <input type='checkbox' name='punctuation' id='punctuation'>
+            <label for='punctuation'>At least one punctuation character</label>
+          </div>
+          <div>
+            <input type='checkbox' name='mixedcase' id='mixedcase'>
+            <label for='mixedcase'>Both upper and lower-case letters</label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Password restrictions</legend>
+          <div>
+            <input type='checkbox' name='nospecial' id='nospecial'>
+            <label for='nospecial'>No special characters</label>
+          </div>
+          <div>
+            <input type='checkbox' name='digitsonly' id='digitsonly'>
+            <label for='digitsonly'>Digits only</label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Password length</legend>
+          <select name='length' id='length'>
+            <option>4</option>
+            <option>6</option>
+            <option>8</option>
+            <option>10</option>
+            <option>12</option>
+            <option>14</option>
+            <option>16</option>
+            <option>18</option>
+            <option>20</option>
+            <option>22</option>
+            <option>24</option>
+            <option>26</option>
+          </select>
+        </fieldset>
+      </div>
+    </form>
+    <script src='publicsuffix.js'></script>
+    <script src='sha1.js'></script>
+    <script src='passhash.js'></script>
+    <script src='common.js'></script>
+    <script src='popup.js'></script>
+  </body>
+</html>

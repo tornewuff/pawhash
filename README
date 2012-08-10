@@ -1,0 +1,60 @@
+PawHash
+=======
+
+PawHash is a Chrome/Chromium extension which securely generates website-specific
+passwords from a single master password. It's based on the excellent Password
+Hasher extension for Firefox by Steve Cooper <http://wijjo.com/passhash> and
+generates the same passwords given the same inputs.
+
+Why use it?
+-----------
+
+Using the same password on many websites is a security risk, because many sites
+do not store the password securely or are vulnerable to exploits allowing the
+passwords to be intercepted. When one site is compromised and the passwords
+stolen and cracked, this often allows the attacker to use the same
+username/email and password to log in as those users on many different sites.
+
+However, remembering a unique password for every website is impractical. This
+extension solves the problem by allowing you to remember just one master
+password, which is used to calculate a unique and secure password for a given
+site. This works by using a "hash algorithm" which, given the master password
+and the name of the website, combines them in a way which is impossible to
+reverse, but generates the same result every time.
+
+This avoids having to use a password manager which stores all your passwords,
+meaning there is nothing for an attacker to steal, and you can use any computer
+you trust without needing to have a copy of your password file.
+
+License
+-------
+
+Code gratefully reused:
+
+* sha1.js is originally from Paul Johnston's jshash library,
+  <http://pajhome.org.uk/crypt/md5>, with minor modifications to introduce fewer
+  globals. It is distributed under the BSD license.
+
+* passhash.js is originally from Steve Cooper's Password Hasher extension for
+  Firefox, <http://wijjo.com/passhash>, though only the required functions are
+  included. It is distributed under the MPL 1.1/GPL 2.0/LGPL 2.1 licenses.
+
+* The public suffix tree in publicsuffix.js is compiled from the list maintained
+  by Mozilla et al., <http://publicsuffix.org/>. It is distributed under the
+  MPL 2.0 license.
+
+The rest:
+
+  Copyright 2012 Google Inc. All Rights Reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
