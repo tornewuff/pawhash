@@ -146,8 +146,11 @@
     hash_field.addEventListener('keypress', checkKeyPress);
     fill_button.addEventListener('click', fillCurrentTab);
     options_button.addEventListener('click', function () {
-      options_button.style.display = 'none';
-      options_div.style.display = 'block';
+      if (options_div.style.display == 'block') {
+        options_div.style.display = 'none';
+      } else {
+        options_div.style.display = 'block';
+      }
     });
 
     // Initially, focus the tag field. We don't know if we can guess it yet.
