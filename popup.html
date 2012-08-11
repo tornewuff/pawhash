@@ -2,44 +2,29 @@
 <html>
   <head>
     <title>PawHash</title>
-    <link rel='stylesheet' href='popup.css'>
+    <link rel='stylesheet' href='common.css'>
   </head>
   <body>
     <form>
       <label for='tag'>Site Tag</label>
-      <input type='password' name='tag' id='tag'>
+      <input type='password' name='tag' id='tag' size='20'>
       <label for='key'>Master Password</label>
-      <input type='password' name='key' id='key'>
+      <input type='password' name='key' id='key' size='20'>
       <label for='hash'>Hashed Password</label>
-      <input type='password' name='hash' id='hash'>
+      <input type='password' name='hash' id='hash' size='20'>
       <button type='button' id='fill'>Autofill Hash</button>
       <button type='button' id='showoptions'>Options</button>
-      <div id='options'>
+      <div id='options' class='hide'>
         <fieldset>
-          <legend>Password requirements</legend>
-          <div>
-            <input type='checkbox' name='digits' id='digits'>
-            <label for='digits'>At least one digit</label>
-          </div>
-          <div>
-            <input type='checkbox' name='punctuation' id='punctuation'>
-            <label for='punctuation'>At least one punctuation character</label>
-          </div>
-          <div>
-            <input type='checkbox' name='mixedcase' id='mixedcase'>
-            <label for='mixedcase'>Both upper and lower-case letters</label>
-          </div>
+          <legend>Requirements</legend>
+          <label><input type='checkbox' name='digits' id='digits'> Digits</label>
+          <label><input type='checkbox' name='punctuation' id='punctuation'> Punctuation</label>
+          <label><input type='checkbox' name='mixedcase' id='mixedcase'> Mixed case</label>
         </fieldset>
         <fieldset>
-          <legend>Password restrictions</legend>
-          <div>
-            <input type='checkbox' name='nospecial' id='nospecial'>
-            <label for='nospecial'>No special characters</label>
-          </div>
-          <div>
-            <input type='checkbox' name='digitsonly' id='digitsonly'>
-            <label for='digitsonly'>Digits only</label>
-          </div>
+          <legend>Restrictions</legend>
+          <label><input type='checkbox' name='nospecial' id='nospecial'> No punctuation</label>
+          <label><input type='checkbox' name='digitsonly' id='digitsonly'> Digits only</label>
         </fieldset>
         <fieldset>
           <legend>Password length</legend>

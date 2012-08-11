@@ -2,34 +2,20 @@
 <html>
   <head>
     <title>PawHash Options</title>
+    <link rel='stylesheet' href='common.css'>
   </head>
   <body>
     <form>
       <fieldset>
         <legend>Default password requirements</legend>
-        <div>
-          <input type='checkbox' name='digits' id='digits'>
-          <label for='digits'>At least one digit</label>
-        </div>
-        <div>
-          <input type='checkbox' name='punctuation' id='punctuation'>
-          <label for='punctuation'>At least one punctuation character</label>
-        </div>
-        <div>
-          <input type='checkbox' name='mixedcase' id='mixedcase'>
-          <label for='mixedcase'>Both upper and lower-case letters</label>
-        </div>
+        <label><input type='checkbox' name='digits' id='digits'> At least one digit</label>
+        <label><input type='checkbox' name='punctuation' id='punctuation'> At least one punctuation character</label>
+        <label><input type='checkbox' name='mixedcase' id='mixedcase'> Both upper and lower-case letters</label>
       </fieldset>
       <fieldset>
         <legend>Default password restrictions</legend>
-        <div>
-          <input type='checkbox' name='nospecial' id='nospecial'>
-          <label for='nospecial'>No special characters</label>
-        </div>
-        <div>
-          <input type='checkbox' name='digitsonly' id='digitsonly'>
-          <label for='digitsonly'>Digits only</label>
-        </div>
+        <label><input type='checkbox' name='nospecial' id='nospecial'> No special characters</label>
+        <label><input type='checkbox' name='digitsonly' id='digitsonly'> Digits only</label>
       </fieldset>
       <fieldset>
         <legend>Default password length</legend>
@@ -50,44 +36,20 @@
       </fieldset>
       <fieldset>
         <legend>Site tag guessing</legend>
-        <div>
-          <input type='radio' name='guesstag' id='guessno' value='no'>
-          <label for='guessno'>Do not guess site tag</label>
-        </div>
-        <div>
-          <input type='radio' name='guesstag' id='guessname' value='name'>
-          <label for='guessname'>Guessed tag is site name (e.g. "google")</label>
-        </div>
-        <div>
-          <input type='radio' name='guesstag' id='guessdomain' value='domain'>
-          <label for='guessdomain'>Guessed tag is site name and top-level domain (e.g. "google.com")</label>
-        </div>
-        <div>
-          <input type='radio' name='guesstag' id='guessfull' value='full'>
-          <label for='guessfull'>Guessed tag is whole hostname (e.g. "www.google.com")</label>
-        </div>
+        <label><input type='radio' name='guesstag' id='guessno' value='no'> Do not guess site tag</label>
+        <label><input type='radio' name='guesstag' id='guessname' value='name'> Guessed tag is site name (e.g. "google")</label>
+        <label><input type='radio' name='guesstag' id='guessdomain' value='domain'> Guessed tag is site name and top-level domain (e.g. "google.com")</label>
+        <label><input type='radio' name='guesstag' id='guessfull' value='full'> Guessed tag is whole hostname (e.g. "www.google.com")</label>
       </fieldset>
       <fieldset>
         <legend>Master password storage options</legend>
-        <div>
-          <input type='radio' name='storepass' id='storenever' value='never'>
-          <label for='storenever'>Do not store the master password</label>
-        </div>
-        <div>
-          <input type='radio' name='storepass' id='storeforever' value='forever'>
-          <label for='storeforever'>Store the master password locally forever (not synced) (CAUTION: NOT ENCRYPTED)</label>
-        </div>
+        <label><input type='radio' name='storepass' id='storenever' value='never'> Do not store the master password</label>
+        <label><input type='radio' name='storepass' id='storeforever' value='forever'> Store the master password locally forever (not synced) (CAUTION: NOT ENCRYPTED)</label>
       </fieldset>
       <fieldset>
         <legend>Display options</legend>
-        <div>
-          <input type='checkbox' name='displayhash' id='displayhash'>
-          <label for='displayhash'>Display generated hash</label>
-        </div>
-        <div>
-          <input type='checkbox' name='displaytag' id='displaytag'>
-          <label for='displaytag'>Display site tag</label>
-        </div>
+        <label><input type='checkbox' name='displayhash' id='displayhash'> Display generated hash</label>
+        <label><input type='checkbox' name='displaytag' id='displaytag'> Display site tag</label>
       </fieldset>
     </form>
     <script src='common.js'></script>
