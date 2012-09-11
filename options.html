@@ -42,6 +42,12 @@
         <label><input type='radio' name='guesstag' value='full'> Guessed tag is whole hostname (e.g. "www.google.com")</label>
       </fieldset>
       <fieldset>
+        <legend>Site-specific options</legend>
+        <label><input type='radio' name='storesite' value='never'> Do not store site-specific options</label>
+        <label><input type='radio' name='storesite' value='changed'> Only store site-specific options if they are different to the defaults</label>
+        <label><input type='radio' name='storesite' value='all'> Store options for all sites even if they are the same as the defaults (this effectively logs the sites you use the extension on)</label>
+      </fieldset>
+      <fieldset>
         <legend>Master password storage options</legend>
         <label><input type='radio' name='storepass' value='never'> Do not store the master password</label>
         <label><input type='radio' name='storepass' value='forever'> Store the master password locally forever (not synced) (CAUTION: NOT ENCRYPTED)</label>

@@ -36,17 +36,21 @@ var getOptions = function (callback) {
       guesstag: 'name',
       displayhash: false,
       displaytag: true,
-      storepass: 'never'
+      storepass: 'never',
+      storesite: 'changed'
     };
 
     // Copy only options that already exist in defaults. Obsolete settings will
     // be dropped.
-    for (var option in this.globalOptions) {
-      if (option in items.options) {
-        this.globalOptions[option] = items.options[option];
+    if (items.options !== undefined) {
+      for (var option in this.globalOptions) {
+        if (option in items.options) {
+          this.globalOptions[option] = items.options[option];
+        }
       }
     }
 
+    this.savedItems = items;
     this.resetToGlobal();
   };
 
@@ -66,6 +70,104 @@ var getOptions = function (callback) {
       this.globalOptions[option] = this[option];
     }
     chrome.storage.sync.set({options: this.globalOptions});
+  };
+
+  // Get the hash bucket for the given tag.
+  Options.prototype.hashBucket = function (tag) {
+    // Java string hashcode implementation.
+    var hash = 0;
+    for (var i = 0; i < tag.length; i++) {
+      hash = ((hash << 5) - hash) + tag.charCodeAt(i);
+      hash = hash & hash;
+    }
+
+    // Hash is signed; take absolute value. 419 buckets leaves us room for ~100
+    // other stored values, and is prime (everyone loves primes).
+    hash = Math.abs(hash) % 419;
+    return 'tag_' + hash;
+  };
+
+  // Get the saved options from the hashed index for the given tag.
+  Options.prototype.getHashedTagOpts = function (tag) {
+    var bucketobj = this.savedItems[this.hashBucket(tag)] || {};
+    return bucketobj[tag];
+  };
+
+  // Set and save the options in the hashed index for the given tag.
+  Options.prototype.setHashedTagOpts = function (tag, value) {
+    var bucket = this.hashBucket(tag);
+    var save = {};
+    save[bucket] = this.savedItems[bucket] || {};
+    save[bucket][tag] = value;
+    chrome.storage.sync.set(save);
+  };
+
+  // Delete and save the options in the hashed index for the given tag.
+  Options.prototype.delHashedTagOpts = function (tag) {
+    var bucket = this.hashBucket(tag);
+    var save = {};
+    save[bucket] = this.savedItems[bucket] || {};
+    delete save[bucket][tag];
+    if (Object.keys(save[bucket]).length == 0) {
+      chrome.storage.sync.remove(bucket);
+    } else {
+      chrome.storage.sync.set(save);
+    }
+  };
+
+  // Load tag-specific options for the specified tag.
+  Options.prototype.loadTag = function (tag) {
+    this.resetToGlobal();
+    this.tag = tag;
+    var tagopts = this.getHashedTagOpts(tag);
+    if (tagopts !== undefined) {
+      this.digits = (tagopts.f.indexOf('d') != -1);
+      this.punctuation = (tagopts.f.indexOf('p') != -1);
+      this.mixedcase = (tagopts.f.indexOf('m') != -1);
+      this.nospecial = (tagopts.f.indexOf('r') != -1);
+      this.digitsonly = (tagopts.f.indexOf('g') != -1);
+      this.length = tagopts.l;
+    }
+    this.updateDOM();
+  };
+
+  // Save current options as the tag-specific options for the current tag.
+  // If onlyChanged is true, only save the options if they are different to the
+  // defaults.
+  Options.prototype.saveTagSpecific = function (onlyChanged) {
+    if (this.tag.length < 1) {
+      // Don't try and save for a blank tag.
+      return;
+    }
+
+    // Check if any options are different to the defaults.
+    if (onlyChanged) {
+      var changed = false;
+      for (var option in this.globalOptions) {
+        if (this[option] != this.globalOptions[option]) {
+          changed = true;
+          break;
+        }
+      }
+      if (!changed) {
+        // We need to delete any saved option for this tag, in case it was
+        // previously saved with non-default values.
+        this.delHashedTagOpts(this.tag);
+        return;
+      }
+    }
+
+    // This format is relatively compact and happens to be similar to the
+    // original Firefox extension, though we store length in a seperate field
+    // rather than as part of the string to make parsing easier.
+    var flags = '';
+    if (this.digits) flags += 'd';
+    if (this.punctuation) flags += 'p';
+    if (this.mixedcase) flags += 'm';
+    if (this.nospecial) flags += 'r';
+    if (this.digitsonly) flags += 'g';
+    var tagopts = { f: flags, l: this.length };
+    this.setHashedTagOpts(this.tag, tagopts);
   };
 
   // Update the DOM to match the state of this options object.
@@ -121,7 +223,11 @@ var getOptions = function (callback) {
   ////////////////////////////////////////////////////////
   // Execution starts here.
 
-  chrome.storage.sync.get({options: {}}, function (items) {
+  // We fetch all the items in sync storage, so that we don't have to make
+  // further asynchronous calls later. The maximum sync storage size is ~100KB
+  // so even if it's full this won't be too expensive, and we only keep our
+  // state in memory while the popup or options page is open.
+  chrome.storage.sync.get(null, function (items) {
     // Pass options to the callback.
     callback(new Options(items));
   });

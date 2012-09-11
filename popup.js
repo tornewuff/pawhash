@@ -69,8 +69,8 @@
 
     // Given a chrome tab object, inject a content script which sets the value
     // of every password field in that tab to the currently calculated hash
-    // output. Save the master password if it's supposed to be stored, and then
-    // close the popup.
+    // output. Save the master password if it's supposed to be stored, save
+    // tag-specific options, and then close the popup.
     var fillHash = function (tab) {
       var quoted = hash_field.value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       chrome.tabs.executeScript(tab.id, { code:
@@ -80,8 +80,12 @@
         "     inputs[i].value = '" + quoted + "';"
       });
 
-      if (options.storepass == 'forever')
+      if (options.storepass == 'forever') {
         chrome.storage.local.set({masterpassword: key_field.value});
+      }
+      if (options.storesite != 'never') {
+        options.saveTagSpecific(options.storesite == 'changed');
+      }
 
       window.close();
     };
@@ -124,6 +128,13 @@
       }
     };
 
+    // When the tag has changed, load the tag-specific options again and
+    // recalculate the hash in case the key is already provided.
+    var tagChanged = function () {
+      options.loadTag(tag_field.value);
+      recalculateHash();
+    };
+
 
     /////////////////////////////////////////////////
     // Execution starts here.
@@ -142,7 +153,7 @@
 
     // Set event handlers on fields. Recalculate the hash when inputs change,
     // also check for enter and handle button clicks.
-    tag_field.addEventListener('input', recalculateHash);
+    tag_field.addEventListener('input', tagChanged);
     tag_field.addEventListener('keypress', checkKeyPress);
     key_field.addEventListener('input', recalculateHash);
     key_field.addEventListener('keypress', checkKeyPress);
@@ -162,9 +173,10 @@
     if (options.guesstag != 'no') {
       withCurrentTab(function (tab) {
           tag_field.value = guessTag(tab.url);
-          // Recalculate after tag guessing in case the key was saved (in which
-          // case we may be done already).
-          recalculateHash();
+          // Load tag-specific options after tag guessing. This will also
+          // calculate the hash if the key was saved (in which case we may be
+          // done already).
+          tagChanged();
           // Focus the key field after tag guessing, in the assumption that the
           // guess was correct.
           key_field.focus();
