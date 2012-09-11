@@ -17,13 +17,8 @@
   'use strict';
 
   getOptions(function (options) {
-    // Callback to save modified options back to chrome storage.
-    var saveOptions = function (options) {
-      chrome.storage.sync.set({options: options});
-      if (options.storepass != 'forever')
-        chrome.storage.local.remove('masterpassword');
-    };
-
-    copyOptionsToDOM(options, saveOptions);
+    // Bind the options object to the DOM and automatically save the settings
+    // on change.
+    options.bindToDOM(options.saveToGlobal.bind(options));
   });
 })();

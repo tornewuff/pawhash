@@ -135,7 +135,7 @@
 
     // Set up the per-site options controls to match the default options,
     // and arrange for recalculateHash to be called if the options change.
-    copyOptionsToDOM(options, recalculateHash);
+    options.bindToDOM(recalculateHash);
 
     // Set event handlers on fields. Recalculate the hash when inputs change,
     // also check for enter and handle button clicks.
