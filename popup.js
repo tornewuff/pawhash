@@ -24,77 +24,6 @@
   var options_button = document.getElementById('showoptions');
   var options_div = document.getElementById('options');
 
-  // Given the URL of the document and the guessing mode from the options,
-  // return the guessed site tag.
-  var guessTag = function (url, mode) {
-    var anchor = document.createElement('a');
-    anchor.href = url;
-    if (mode == 'full')
-      return anchor.host;
-    var parts = splitPublicSuffix(anchor.host);
-    var prefix = parts[0];
-    var suffix = parts[1];
-    if (prefix.length >= 1) {
-      if (mode == 'name')
-        return prefix[prefix.length - 1];
-      else if (mode == 'domain')
-        return prefix[prefix.length - 1] + '.' + suffix.join('.');
-    } else if (suffix.length >= 1) {
-      if (mode == 'name')
-        return suffix[0];
-      else if (mode == 'domain')
-        return suffix.join('.')
-    }
-  };
-
-  // Ask chrome for a reference to the current tab, and call f with the tab as
-  // an argument. Async.
-  var withCurrentTab = function (f) {
-    chrome.tabs.query(
-        {windowId: chrome.windows.WINDOW_ID_CURRENT, active: true},
-        function (tabs) {
-      if (tabs.length >= 1)
-        f.call(null, tabs[0]);
-    });
-  };
-
-  // Given a chrome tab object, inject a content script which sets the value of
-  // every password field in that tab to the currently calculated hash output.
-  var fillHash = function (tab) {
-    var quoted = hash_field.value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-    chrome.tabs.executeScript(tab.id, { code:
-      "var inputs = document.getElementsByTagName('input');" +
-      "for (var i = 0; i < inputs.length; ++i)" +
-      "  if (inputs[i].getAttribute('type') == 'password')" +
-      "     inputs[i].value = '" + quoted + "';"
-    });
-    window.close();
-  };
-
-  // Convenience to fill the hash in the current tab.
-  var fillCurrentTab = function () {
-    withCurrentTab(fillHash);
-  };
-
-  // Handle keypresses in the popup: enter should fill the hash into the current
-  // tab if both the tag and key are specified, otherwise move the focus to the
-  // empty field.
-  var checkKeyPress = function (event) {
-    if (event.which == 13) {
-      event.preventDefault();
-      if (tag_field.value == '')
-        tag_field.focus();
-      else if (key_field.value == '')
-        key_field.focus();
-      else
-        fillCurrentTab();
-    }
-  };
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Execution starts here.
-
   // Fetch the stored master password and fill the key field if it exists.
   chrome.storage.local.get('masterpassword', function (items) {
     if ('masterpassword' in items) {
@@ -104,13 +33,73 @@
 
   // Fetch the options, then execute the following code as a callback.
   getOptions(function (options) {
-    // The hash and tag fields have type "password" for confidentiality by
-    // default. If the user has asked to display them, change their type back to
-    // "text".
-    if (options.displayhash)
-      hash_field.setAttribute('type', 'text');
-    if (options.displaytag)
-      tag_field.setAttribute('type', 'text');
+
+    // Given the URL of the document, return the guessed site tag.
+    var guessTag = function (url) {
+      var anchor = document.createElement('a');
+      anchor.href = url;
+      if (options.guesstag == 'full')
+        return anchor.host;
+      var parts = splitPublicSuffix(anchor.host);
+      var prefix = parts[0];
+      var suffix = parts[1];
+      if (prefix.length >= 1) {
+        if (options.guesstag == 'name')
+          return prefix[prefix.length - 1];
+        else if (options.guesstag == 'domain')
+          return prefix[prefix.length - 1] + '.' + suffix.join('.');
+      } else if (suffix.length >= 1) {
+        if (options.guesstag == 'name')
+          return suffix[0];
+        else if (options.guesstag == 'domain')
+          return suffix.join('.')
+      }
+    };
+
+    // Ask chrome for a reference to the current tab, and call f with the tab
+    // as an argument. Async.
+    var withCurrentTab = function (f) {
+      chrome.tabs.query(
+          {windowId: chrome.windows.WINDOW_ID_CURRENT, active: true},
+          function (tabs) {
+        if (tabs.length >= 1)
+          f.call(null, tabs[0]);
+      });
+    };
+
+    // Given a chrome tab object, inject a content script which sets the value
+    // of every password field in that tab to the currently calculated hash
+    // output.
+    var fillHash = function (tab) {
+      var quoted = hash_field.value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      chrome.tabs.executeScript(tab.id, { code:
+        "var inputs = document.getElementsByTagName('input');" +
+        "for (var i = 0; i < inputs.length; ++i)" +
+        "  if (inputs[i].getAttribute('type') == 'password')" +
+        "     inputs[i].value = '" + quoted + "';"
+      });
+      window.close();
+    };
+
+    // Fill the hash in the current tab.
+    var fillCurrentTab = function () {
+      withCurrentTab(fillHash);
+    };
+
+    // Handle keypresses in the popup: enter should fill the hash into the
+    // current tab if both the tag and key are specified, otherwise move the
+    // focus to the empty field.
+    var checkKeyPress = function (event) {
+      if (event.which == 13) {
+        event.preventDefault();
+        if (tag_field.value == '')
+          tag_field.focus();
+        else if (key_field.value == '')
+          key_field.focus();
+        else
+          fillCurrentTab();
+      }
+    };
 
     // Define a function that uses the field values and the current options to
     // recalculate the hash.
@@ -132,6 +121,18 @@
       if (options.storepass == 'forever')
         chrome.storage.local.set({masterpassword: key_field.value});
     };
+
+
+    /////////////////////////////////////////////////
+    // Execution starts here.
+
+    // The hash and tag fields have type "password" for confidentiality by
+    // default. If the user has asked to display them, change their type back to
+    // "text".
+    if (options.displayhash)
+      hash_field.setAttribute('type', 'text');
+    if (options.displaytag)
+      tag_field.setAttribute('type', 'text');
 
     // Set up the per-site options controls to match the default options,
     // and arrange for recalculateHash to be called if the options change.
@@ -158,7 +159,7 @@
 
     if (options.guesstag != 'no') {
       withCurrentTab(function (tab) {
-          tag_field.value = guessTag(tab.url, options.guesstag);
+          tag_field.value = guessTag(tab.url);
           // Recalculate after tag guessing in case the key was saved (in which
           // case we may be done already).
           recalculateHash();
