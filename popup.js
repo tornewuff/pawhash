@@ -69,7 +69,8 @@
 
     // Given a chrome tab object, inject a content script which sets the value
     // of every password field in that tab to the currently calculated hash
-    // output.
+    // output. Save the master password if it's supposed to be stored, and then
+    // close the popup.
     var fillHash = function (tab) {
       var quoted = hash_field.value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       chrome.tabs.executeScript(tab.id, { code:
@@ -78,6 +79,10 @@
         "  if (inputs[i].getAttribute('type') == 'password')" +
         "     inputs[i].value = '" + quoted + "';"
       });
+
+      if (options.storepass == 'forever')
+        chrome.storage.local.set({masterpassword: key_field.value});
+
       window.close();
     };
 
@@ -117,9 +122,6 @@
       } else {
         hash_field.value = '';
       }
-
-      if (options.storepass == 'forever')
-        chrome.storage.local.set({masterpassword: key_field.value});
     };
 
 
