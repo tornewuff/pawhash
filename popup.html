@@ -6,14 +6,27 @@
   </head>
   <body>
     <form>
-      <label for='tag'>Site Tag</label>
-      <input type='password' name='tag' id='tag' size='20'>
-      <label for='key'>Master Password</label>
-      <input type='password' name='key' id='key' size='20'>
-      <label for='hash'>Hashed Password</label>
-      <input type='password' name='hash' id='hash' size='20'>
-      <button type='button' id='fill'>Autofill Hash</button>
-      <button type='button' id='showoptions'>Options</button>
+      <div>
+        <div class='ib'>
+          <label for='tag'>Site Tag</label>
+          <input type='password' name='tag' id='tag' size='20'>
+        </div>
+        <button type='button' id='bump'>Bump</button>
+      </div>
+      <div>
+        <div class='ib'>
+          <label for='key'>Master Password</label>
+          <input type='password' name='key' id='key' size='20'>
+          <button type='button' id='fill'>Autofill</button>
+        </div>
+      </div>
+      <div>
+        <div class='ib'>
+          <label for='hash'>Hashed Password</label>
+          <input type='password' name='hash' id='hash' size='20'>
+          <button type='button' id='showoptions'>Options</button>
+        </div>
+      </div>
       <div id='options' class='hide'>
         <fieldset>
           <legend>Requirements</legend>
