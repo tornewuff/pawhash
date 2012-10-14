@@ -121,10 +121,13 @@ var getOptions = function (callback) {
     }
   };
 
-  // Load tag-specific options for the specified tag.
-  Options.prototype.loadTag = function (tag) {
+  // Load tag-specific options for the specified tag. Returns the bump value
+  // if one was saved, so it can be appended to the tag.
+  Options.prototype.loadTag = function (tag, bump) {
     this.resetToGlobal();
     this.tag = tag;
+    this.bump = bump;
+    var savedbump = bump;
     var tagopts = this.getHashedTagOpts(tag);
     if (tagopts !== undefined) {
       this.digits = (tagopts.f.indexOf('d') != -1);
@@ -138,8 +141,10 @@ var getOptions = function (callback) {
       } else {
         this.length = tagopts.l;
       }
+      savedbump = tagopts.b;
     }
     this.updateDOM();
+    return savedbump;
   };
 
   // Save current options as the tag-specific options for the current tag.
@@ -178,6 +183,7 @@ var getOptions = function (callback) {
     if (this.nospecial) flags += 'r';
     if (this.digitsonly) flags += 'g';
     var tagopts = { f: flags, l: this.length };
+    if (this.bump !== undefined) tagopts.b = this.bump;
     this.setHashedTagOpts(this.tag, tagopts);
   };
 

@@ -20,6 +20,7 @@
   var tag_field = document.getElementById('tag');
   var key_field = document.getElementById('key');
   var hash_field = document.getElementById('hash');
+  var bump_button = document.getElementById('bump');
   var fill_button = document.getElementById('fill');
   var options_button = document.getElementById('showoptions');
   var options_div = document.getElementById('options');
@@ -128,12 +129,40 @@
       }
     };
 
+    var tagSplit = /^(.*)(?::([0-9]+))$/;
+
     // When the tag has changed, load the tag-specific options again and
-    // recalculate the hash in case the key is already provided.
-    var tagChanged = function () {
-      options.loadTag(tag_field.value);
+    // recalculate the hash in case the key is already provided. If it's
+    // a guessed tag, append the stored bump value.
+    var tagChanged = function (guessed) {
+      var match = tagSplit.exec(tag_field.value);
+      if (match && match.length == 3) {
+        options.loadTag(match[1], parseInt(match[2], 10));
+      } else {
+        var bump = options.loadTag(tag_field.value);
+        if (guessed === true && bump !== undefined) {
+          tag_field.value = tag_field.value + ':' + bump;
+          tagChanged();
+          return;
+        }
+      }
       recalculateHash();
     };
+
+    // Bump the site tag to the next highest number.
+    var bumpTag = function () {
+      if (tag_field.value.length == 0)
+        return;
+
+      var match = tagSplit.exec(tag_field.value);
+      if (match && match.length == 3) {
+        tag_field.value = match[1] + ':' + (parseInt(match[2], 10) + 1);
+      } else {
+        tag_field.value = tag_field.value + ':1';
+      }
+
+      tagChanged();
+    }
 
 
     /////////////////////////////////////////////////
@@ -158,6 +187,7 @@
     key_field.addEventListener('input', recalculateHash);
     key_field.addEventListener('keypress', checkKeyPress);
     hash_field.addEventListener('keypress', checkKeyPress);
+    bump_button.addEventListener('click', bumpTag);
     fill_button.addEventListener('click', fillCurrentTab);
     options_button.addEventListener('click', function () {
       if (options_div.style.display == 'block') {
@@ -176,7 +206,7 @@
           // Load tag-specific options after tag guessing. This will also
           // calculate the hash if the key was saved (in which case we may be
           // done already).
-          tagChanged();
+          tagChanged(true);
           // Focus the key field after tag guessing, in the assumption that the
           // guess was correct.
           key_field.focus();
