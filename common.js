@@ -52,6 +52,12 @@ var getOptions = function (callback) {
 
     this.savedItems = items;
     this.resetToGlobal();
+
+    // Convert old stored string lengths into numbers.
+    if (typeof this.length == 'string') {
+      this.length = parseInt(this.length, 10);
+      this.saveToGlobal();
+    }
   };
 
   // Reset the options object to the saved global settings.
@@ -126,7 +132,12 @@ var getOptions = function (callback) {
       this.mixedcase = (tagopts.f.indexOf('m') != -1);
       this.nospecial = (tagopts.f.indexOf('r') != -1);
       this.digitsonly = (tagopts.f.indexOf('g') != -1);
-      this.length = tagopts.l;
+      // Convert old stored string lengths into numbers.
+      if (typeof tagopts.l == 'string') {
+        this.length = parseInt(tagopts.l, 10);
+      } else {
+        this.length = tagopts.l;
+      }
     }
     this.updateDOM();
   };
@@ -197,6 +208,8 @@ var getOptions = function (callback) {
       var e = event.target;
       if (e.type === 'checkbox') {
         that[e.name] = e.checked;
+      } else if (typeof that[e.name] == 'number') {
+        that[e.name] = parseInt(e.value, 10);
       } else {
         that[e.name] = e.value;
       }
