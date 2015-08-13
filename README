@@ -6,6 +6,11 @@ passwords from a single master password. It's based on the excellent Password
 Hasher extension for Firefox by Steve Cooper <http://wijjo.com/passhash> and
 generates the same passwords given the same inputs.
 
+Disclaimer
+----------
+
+This is not an official Google product and is not supported by Google.
+
 Why use it?
 -----------
 
